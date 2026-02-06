@@ -8,11 +8,23 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
+// Helper Function
+// Converts relative URLs into absolute URLs
+
+function toAbsoluteUrl(baseUrl, src) {
+    try {
+        return new URL(src, baseUrl).href;
+    } catch {
+        return null;
+    }
+}
+
 app.post("/inspect", async (req, res) => {
     const { url } = req.body;
 
     if (!url) {
         return res.status(400).json({
+            success: false,
             error: "URL is required"
         });
     }
@@ -26,13 +38,61 @@ app.post("/inspect", async (req, res) => {
             }
         });
 
-        return res.json({
-            success: true,
-            status: response.status,
-            contentType: response.headers["content-type"],
-            htmlLength: response.data.length
+        const html = response.data;
+        const $ = cheerio.load(html);
+
+        const videos = [];
+
+        // For <video src="">
+
+        $("video[src]").each((_, el) => {
+            const src = $(el).attr("src");
+            const absoluteUrl = toAbsoluteUrl(url, src);
+
+            if (absoluteUrl) {
+                videos.push({
+                    url: absoluteUrl,
+                    source: "video-tag"
+                });
+            }
         });
 
+        // For <video><source></video>
+
+        $("video source[src]").each((_, el) => {
+            const src = $(el).attr("src");
+            const type = $(el).attr("type") || null;
+            const absoluteUrl = toAbsoluteUrl(url, src);
+
+            if (absoluteUrl) {
+                videos.push({
+                    url: absoluteUrl,
+                    type,
+                    source: "video-source"
+                });
+            }
+        });
+
+        // For Standalone <source>
+        $("source[src]").each((_, el) => {
+            const src = $(el).attr("src");
+            const absoluteUrl = toAbsoluteUrl(url, src);
+
+            if (absoluteUrl) {
+                videos.push({
+                    url: absoluteUrl,
+                    source: "standalone-source"
+                });
+            }
+        });
+
+        return res.json({
+            success: true,
+            page: url,
+            found: videos.length,
+            videos
+        });
+        
     } catch (error) {
         const status = error.response?.status || 500;
 
