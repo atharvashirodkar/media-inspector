@@ -12,6 +12,7 @@
   "description": "Web-based tool that analyzes a pages HTML to find and list exposed video media sources. Extracts video links and media sources from webpage code.",
   "dependencies": {
     "axios": "^1.13.4",
+    "cheerio": "^1.2.0",
     "cors": "^2.8.6",
     "express": "^5.2.1"
   }
