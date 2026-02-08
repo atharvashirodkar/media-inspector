@@ -1,6 +1,8 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
+import * as cheerio from "cheerio";
+import { URL } from "url";
 
 const app = express();
 const PORT = 5000;
