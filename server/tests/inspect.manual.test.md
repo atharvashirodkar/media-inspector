@@ -27,12 +27,11 @@ Verify that the inspector can extract video sources from static HTML.
 ```
 
 **Expected Result**
-
-* `success: true`
-* `found > 0`
-* Video URLs resolved to absolute paths
-* Formats such as `video/mp4`, `video/ogg` detected
-* No server crash or timeout
+- `success: true`
+- `found` equals the number of **unique** video URLs
+- Duplicate video sources in the HTML are returned only once
+- Video URLs are resolved to absolute paths
+- Formats such as `video/mp4` and `video/ogg` are detected
 
 ---
 
