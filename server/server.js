@@ -88,11 +88,16 @@ app.post("/inspect", async (req, res) => {
             }
         });
 
+        const uniqueVideos = Array.from(
+            new Map(videos.map(v => [v.url, v])).values()
+        );
+
+
         return res.json({
             success: true,
             page: url,
-            found: videos.length,
-            videos
+            found: uniqueVideos.length,
+            videos: uniqueVideos
         });
         
     } catch (error) {
