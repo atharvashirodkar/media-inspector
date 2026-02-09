@@ -12,6 +12,12 @@ function App() {
       return;
     }
 
+    let normalizedUrl = url.trim();
+
+    if (!/^https?:\/\//i.test(normalizedUrl)) {
+      normalizedUrl = "https://" + normalizedUrl;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
