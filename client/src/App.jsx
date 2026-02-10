@@ -34,7 +34,17 @@ function App() {
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.message || "Inspection failed");
+        let message = "Inspection failed";
+
+        if (data.statusCode === 403) {
+          message = "This website blocks automated inspection";
+        } else if (data.statusCode === 400) {
+          message = "Invalid URL";
+        } else if (data.message) {
+          message = data.message;
+        }
+
+        throw new Error(message);
       }
 
       setResult(data);
@@ -59,7 +69,7 @@ function App() {
 
       <br /><br />
 
-      <button onClick={inspectUrl} disabled={loading}>
+      <button onClick={inspectUrl} disabled={loading || !url.trim()}>
         {loading ? "Inspecting..." : "Inspect"}
       </button>
 
@@ -69,18 +79,23 @@ function App() {
 
       {result && (
         <div>
-          {/* <h1>{result}</h1> */}
+
           <h3>Found {result.found} video(s)</h3>
-          <ul>
-            {result.videos.map((video, index) => (
-              <li key={index}>
-                <a href={video.url} target="_blank" rel="noreferrer">
-                  {video.url}
-                </a>
-                {video.type && ` (${video.type})`}
-              </li>
-            ))}
-          </ul>
+
+          {result.found === 0 ? (
+            <p>No video content found on this page.</p>
+          ) : (
+            <ul>
+              {result.videos.map((video, index) => (
+                <li key={index}>
+                  <a href={video.url} target="_blank" rel="noreferrer">
+                    {video.url}
+                  </a>
+                  {video.type && ` (${video.type})`}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>
