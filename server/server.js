@@ -27,7 +27,18 @@ app.post("/inspect", async (req, res) => {
     if (!url) {
         return res.status(400).json({
             success: false,
-            error: "URL is required"
+            message: "URL is required",
+            statusCode: 400
+        });
+    }
+
+    try {
+        new URL(url);
+    } catch {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid URL",
+            statusCode: 400
         });
     }
 
@@ -76,7 +87,7 @@ app.post("/inspect", async (req, res) => {
         });
 
         // For Standalone <source>
-        $("source[src]").each((_, el) => {
+        $("source[src]").not("video source").each((_, el) => {
             const src = $(el).attr("src");
             const absoluteUrl = toAbsoluteUrl(url, src);
 
@@ -99,7 +110,7 @@ app.post("/inspect", async (req, res) => {
             found: uniqueVideos.length,
             videos: uniqueVideos
         });
-        
+
     } catch (error) {
         const status = error.response?.status || 500;
 
