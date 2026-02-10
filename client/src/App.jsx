@@ -28,7 +28,7 @@ function App() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url: normalizedUrl  })
       });
 
       const data = await response.json();
