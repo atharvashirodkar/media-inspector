@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 function App() {
+  const API_URL = import.meta.env.VITE_API_URL;
+  
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,12 +25,12 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:5000/inspect", {
+      const response = await fetch(`${API_URL}/inspect`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ url: normalizedUrl  })
+        body: JSON.stringify({ url: normalizedUrl })
       });
 
       const data = await response.json();
